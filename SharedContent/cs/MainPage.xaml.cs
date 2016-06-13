@@ -30,7 +30,7 @@ namespace SDKTemplate
 
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // This is a static public property that allows downstream pages to get a handle to the MainPage instance
             // in order to call methods that are in this class.
@@ -42,14 +42,7 @@ namespace SDKTemplate
         {
             // Populate the scenario list from the SampleConfiguration.cs file
             ScenarioControl.ItemsSource = scenarios;
-            if (Window.Current.Bounds.Width < 640)
-            {
-                ScenarioControl.SelectedIndex = -1;
-            }
-            else
-            {
-                ScenarioControl.SelectedIndex = 0;
-            }
+            ScenarioControl.SelectedIndex = Window.Current.Bounds.Width < 640 ? -1 : 0;
         }
 
         /// <summary>
@@ -58,27 +51,21 @@ namespace SDKTemplate
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ScenarioControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void ScenarioControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Clear the status block when navigating scenarios.
-            NotifyUser(String.Empty, NotifyType.StatusMessage);
+            NotifyUser(string.Empty, NotifyType.StatusMessage);
 
-            ListBox scenarioListBox = sender as ListBox;
-            Scenario s = scenarioListBox.SelectedItem as Scenario;
-            if (s != null)
+            var scenarioListBox = sender as ListBox;
+            var s = scenarioListBox.SelectedItem as Scenario;
+            if(s != null)
             {
                 ScenarioFrame.Navigate(s.ClassType);
-                if (Window.Current.Bounds.Width < 640)
-                {
-                    Splitter.IsPaneOpen = false;
-                }
+                Splitter.IsPaneOpen &= Window.Current.Bounds.Width >= 640;
             }
         }
 
-        public List<Scenario> Scenarios
-        {
-            get { return this.scenarios; }
-        }
+        public List<Scenario> Scenarios => scenarios;
 
         /// <summary>
         /// Used to display messages to the user
@@ -87,7 +74,7 @@ namespace SDKTemplate
         /// <param name="type"></param>
         public void NotifyUser(string strMessage, NotifyType type)
         {
-            switch (type)
+            switch(type)
             {
                 case NotifyType.StatusMessage:
                     StatusBorder.Background = new SolidColorBrush(Windows.UI.Colors.Green);
@@ -99,8 +86,8 @@ namespace SDKTemplate
             StatusBlock.Text = strMessage;
 
             // Collapse the StatusBlock if it has no text to conserve real estate.
-            StatusBorder.Visibility = (StatusBlock.Text != String.Empty) ? Visibility.Visible : Visibility.Collapsed;
-            if (StatusBlock.Text != String.Empty)
+            StatusBorder.Visibility = (StatusBlock.Text != string.Empty) ? Visibility.Visible : Visibility.Collapsed;
+            if(StatusBlock.Text != string.Empty)
             {
                 StatusBorder.Visibility = Visibility.Visible;
                 StatusPanel.Visibility = Visibility.Visible;
@@ -113,14 +100,10 @@ namespace SDKTemplate
         }
 
         async void Footer_Click(object sender, RoutedEventArgs e)
-        {
-            await Windows.System.Launcher.LaunchUriAsync(new Uri(((HyperlinkButton)sender).Tag.ToString()));
-        }
+            => await Windows.System.Launcher.LaunchUriAsync(new Uri(((HyperlinkButton)sender).Tag.ToString()));
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Splitter.IsPaneOpen = !Splitter.IsPaneOpen;
-        }
+        void Button_Click(object sender, RoutedEventArgs e)
+            => Splitter.IsPaneOpen = !Splitter.IsPaneOpen;
     }
     public enum NotifyType
     {
@@ -136,9 +119,6 @@ namespace SDKTemplate
             return (MainPage.Current.Scenarios.IndexOf(s) + 1) + ") " + s.Title;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            return true;
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, string language) => true;
     }
 }
